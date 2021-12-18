@@ -35,9 +35,11 @@
         <b-field horizontal label="IEEE745 Hexa">
             <b-input name="ieee745hexa" expanded v-model="IeeeHexa"></b-input>
         </b-field>
-        <b-field horizontal><!-- Label left empty for spacing -->
+        <b-field horizontal class="buttonslist"><!-- Label left empty for spacing -->
             <p class="control">
-                <b-button label="Convert Bin To Ieee" type="is-primary" v-on:click="ConvertDecimalToIeee()"/>
+                <b-button label="Convert Decimal To IEEE" type="is-primary" class="buttoner" v-on:click="ConvertDecimalToIeee()"/>
+                <b-button label="Convert IEEE To Decimal" type="is-primary" class="buttoner" v-on:click="ConvertIeeeToDecimal()"/>
+                <b-button label="Convert Hex To Decimal" type="is-primary" class="buttoner" v-on:click="ConvertHexToDecimal()"/>
             </p>
         </b-field>
        
@@ -132,6 +134,107 @@ export default {
       }
       return hexa;
     },
+    BinaryToDec(bin){
+      let dec =0;
+      let temp =0;
+      for(let i=0;i<bin.length;i++){
+        temp = bin[i] * Math.pow(2,bin.length - i- 1);
+        dec = temp +dec;
+      }
+      return dec;
+    },
+    BinaryFragmanttedToDec(bin){
+      let dec =0;
+      let temp =0;
+      let tempo = 0;
+      for(let i=0;i<bin.length;i++){
+        tempo = -i -1;
+        temp = bin[i] * Math.pow(2, tempo);
+        dec = temp +dec;
+      }
+      return dec;
+    },
+    ConvertBinaryToDec(bin){
+      let Binary = bin;
+      let Decimal = "";
+      if (Binary[0] == "1"){
+        Decimal = "-";
+      }
+      Binary = Binary.substring(1);
+      let Exposant = Binary.substring(0,8);
+      this.ExposantBinary = Exposant;
+      let Mantisse = Binary.substring(8);
+      this.MantisseBinary = Mantisse;
+      this.ExposantNorme = this.BinaryToDec(Exposant);
+      Exposant = this.BinaryToDec(Exposant) -127;
+      console.log(Exposant);
+      this.Exposant = Exposant;
+      this.MantisseNorme = "1,"+Mantisse;
+      let newMantisse;
+
+      newMantisse = "1";
+      for(let i=0;i<Mantisse.length;i++){
+        if (i == Exposant){
+          newMantisse = newMantisse+","+Mantisse[i];
+        }
+        else{
+          newMantisse = newMantisse+Mantisse[i];
+        }
+        
+      }
+      this.Mantisse = newMantisse;
+      let Mantisses = newMantisse.split(",");
+      let AvantVir = Mantisses[0];
+      AvantVir = this.BinaryToDec(AvantVir);
+      let ApresVir = Mantisses[1];
+      ApresVir = this.BinaryFragmanttedToDec(ApresVir);
+      let Virred = ApresVir + AvantVir;
+      Decimal = Decimal+""+Virred;
+      return Decimal;
+    },
+    formattedfor4bits(bin){
+      let newbin = "";
+      let reste = 4-bin.length;
+      for (let i=0;i<reste;i++){
+        newbin = newbin + "0";
+      }
+      newbin=newbin+""+bin;
+      return newbin;
+    },
+    calculBinFromHex(hex){
+      let newbin = "";
+      let temp = "";
+      let car = "";
+      
+      for(let i=0;i<hex.length;i++){
+        car = hex[i];
+        if (car == "A") {temp = 10;}
+        else if (car == "B") {temp = 11;}
+        else if (car == "C") {temp = 12;}
+        else if (car == "D") {temp = 13;}
+        else if (car == "E") {temp = 14;}
+        else if (car == "F") {temp = 15;}
+        else temp = car;
+        newbin = newbin+this.formattedfor4bits(this.dec2bin(temp));
+      }
+        return newbin;
+    },
+    ConvertHexToDecimal(){
+      let HexaIee = this.IeeeHexa;
+      let Binary = this.calculBinFromHex(HexaIee)
+      this.IeeeBin =Binary;
+      let Decimal = this.ConvertBinaryToDec(Binary);
+      Decimal = Decimal.replace(".",",");
+      this.Decimal = Decimal;
+    },
+    ConvertIeeeToDecimal(){
+      let Binary = this.IeeeBin;
+      let Decimal = this.ConvertBinaryToDec(Binary);
+      Decimal = Decimal.replace(".",",");
+      this.Decimal = Decimal;
+      let HexaIee = this.calculHexaDecimalFormBinary(Binary);
+      this.IeeeHexa = HexaIee;
+    },
     ConvertDecimalToIeee(){
       let Signe;
       Signe = '';
@@ -222,5 +325,12 @@ a {
 }
 .recadredclass {
     margin-left: 86px;
+}
+.buttoner {
+    margin-left: 18px;
+}
+.buttonslist {
+    padding-right: 15%;
+    padding-top: 9px;
 }
 </style>
