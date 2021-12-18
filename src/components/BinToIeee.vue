@@ -4,50 +4,32 @@
             <b-input name="decimal" expanded v-model="Decimal" v-on:keypress="ConvertDecimalToIeee()"></b-input>
         </b-field>
 
-        <b-field horizontal label="Binaire">
-            <b-input name="binaire" expanded v-model="Bin"></b-input>
-        </b-field>
-
-         <b-field horizontal label="Hexadecimal">
-            <b-input name="hexadecimal" expanded v-model="Hexa"></b-input>
-        </b-field>
-
-
         <b-field grouped class="recadredclass">
         <b-field label="Exposant">
-            <b-input name="Exposant" expanded v-model="Exposant"></b-input>
+            <b-input name="Exposant" expanded v-model="Exposant" readonly></b-input>
         </b-field>
         <b-field label="Exposant Norme" expanded>
-           <b-input name="ExposantNorme" expanded v-model="ExposantNorme"></b-input>
+           <b-input name="ExposantNorme" expanded v-model="ExposantNorme" readonly></b-input>
         </b-field>
         <b-field label="Exposant Binary" expanded>
-            <b-input name="ExposantBinary" expanded v-model="ExposantBinary"></b-input>
+            <b-input name="ExposantBinary" expanded v-model="ExposantBinary" readonly></b-input>
         </b-field>
     </b-field>
 
 
     <b-field grouped class="recadredclass">
         <b-field label="Mantisse">
-            <b-input name="Mantisse" expanded v-model="Mantisse"></b-input>
+            <b-input name="Mantisse" expanded v-model="Mantisse" readonly></b-input>
         </b-field>
         <b-field label="Mantisse Norme" expanded>
-           <b-input name="MantisseNorme" expanded v-model="MantisseNorme"></b-input>
+           <b-input name="MantisseNorme" expanded v-model="MantisseNorme" readonly></b-input>
         </b-field>
         <b-field label="Mantisse Binary" expanded>
-            <b-input name="MantisseBinary" expanded v-model="MantisseBinary" class="addreadonly"></b-input>
+            <b-input name="MantisseBinary" expanded v-model="MantisseBinary" readonly></b-input>
         </b-field>
     </b-field>
         <b-field horizontal label="IEEE745 Binaire">
             <b-input name="ieee745bin" expanded v-model="IeeeBin"></b-input>
-        </b-field>
-
-        
-        <b-field horizontal label="DecimalConsoled">
-            <b-input name="decimalConsoled" expanded v-model="DecimalConsoled"></b-input>
-        </b-field>
-
-        <b-field horizontal label="BinConsoled">
-            <b-input name="BinConsoled" expanded v-model="BinConsoled"></b-input>
         </b-field>
 
         <b-field horizontal label="IEEE745 Hexa">
@@ -123,24 +105,34 @@ export default {
     },
     getMantisseFullBinary(bin){
       let newbin = bin;
+      let composedBin ="";
+      let reste = 0;
       if (newbin.length <23){
-        for(let i=0;i<23 -newbin.length;i++){
-          newbin = newbin+"0";
+        reste = 23 - newbin.length;
+        for(let j=0;j< reste;j++){
+          composedBin = composedBin+"0";
         }
+        newbin = newbin+composedBin;
       }
       return newbin;
     },
     calculHexaDecimalFormBinary(bin){
+      let tab = ["A","B","C","D","E","F"];
       let hexa = "";
       let temp = "";
-      for(let i=0;i<7;i++){
-        temp = bin[i*4]+bin[i*4 +1]+bin[i*4 +2]+bin[i*4 +3];
-        console.log(temp);
+      let tempdec = "";
+      for(let z=0;z<8;z++){
+        tempdec = (bin[z*4] * Math.pow(2,3)) + (bin[z*4 +1] * Math.pow(2,2)) + (bin[z*4 +2] * Math.pow(2,1))+(bin[z*4 +3] * Math.pow(2,0));
+        if (tempdec <10){
+          temp = tempdec;
+        } else {
+          temp = tab[tempdec - 10];
+        }
+        hexa = hexa+temp;
       }
-      console.log(hexa);
+      return hexa;
     },
     ConvertDecimalToIeee(){
-
       let Signe;
       Signe = '';
       let Decimal = this.Decimal;
@@ -148,23 +140,19 @@ export default {
       if (Decimal[0] == '-') {
         Signe = 1;
         Decimal = Decimal.substring(1);
-
       } else {
         Signe = 0;
       }
-      
       let AvantVir = Decimal.substring(0,Decimal.indexOf(","));
       let ApresVir = Decimal.substring(Decimal.indexOf(",")+1);
       ApresVir = "0."+ApresVir;
       let BinAfterVir = this.DecimalApresVirgule2bin(ApresVir);
 
-      
-      this.DecimalConsoled = ApresVir+"  ---->>>   "+BinAfterVir;
+      let PureBin = this.dec2bin(AvantVir)+" "+BinAfterVir;
+      this.Bin = PureBin;
 
 
       let BinConsoled = this.dec2bin(AvantVir)+","+BinAfterVir;
-
-
       let newVirg = this.getNewExposant(BinConsoled);
       this.Exposant = newVirg;
       let ExposantNorme = newVirg+127;
@@ -188,15 +176,13 @@ export default {
       let MantisseFullBinary =  this.getMantisseFullBinary(MantisseBinary);
       
 
-
-      
       this.BinConsoled =BinConsoled;
       IeeeBin = Signe+ExposantFullBinary+MantisseFullBinary;
       this.IeeeBin = IeeeBin;
 
       let HexaIee = this.calculHexaDecimalFormBinary(IeeeBin);
-      console.log(HexaIee)
-      this.Bin = this.dec2bin(this.Decimal);
+      this.IeeeHexa = HexaIee;
+      
     },
   },
   data() {
@@ -206,7 +192,6 @@ export default {
       Hexa : '',
       IeeeBin : '',
       IeeeHexa : '',
-      DecimalConsoled : '',
       BinConsoled : '',
       Exposant : '',
       ExposantNorme : '',
