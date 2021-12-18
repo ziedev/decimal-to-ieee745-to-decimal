@@ -1,7 +1,7 @@
 <template>
     <section>
-        <b-field horizontal label="Decimal" type="is-danger" message="Please enter a Decimal">
-            <b-input name="decimal" expanded v-model="Decimal" v-on:keypress="ConvertDecimalToIeee()"></b-input>
+        <b-field horizontal label="Decimal">
+            <b-input name="decimal" expanded v-model="Decimal"></b-input>
         </b-field>
 
         <b-field grouped class="recadredclass">
