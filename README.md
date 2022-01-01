@@ -1,4 +1,4 @@
-# bin-to-iee745
+# Decimal To IEEE745 and IEEE745 To Decimal
 
 ## Project setup
 ```
