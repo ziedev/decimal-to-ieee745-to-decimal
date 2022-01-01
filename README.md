@@ -21,7 +21,7 @@ yarn lint
 ```
 ### Online Demo
 
-Try [Online Demo](https://ziedev.github.io/binaire-to-ieee745-to-bin/)
+Try [Online Demo](https://ziedev.github.io/decimal-to-ieee745-to-decimal/)
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
